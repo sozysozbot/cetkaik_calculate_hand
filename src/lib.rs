@@ -5,15 +5,16 @@ mod tests {
     use serde_json;
     #[test]
     fn it_works() {
+        use std::convert::TryInto;
         let test_cases = include_str!("test_cases.json");
 
         let data: Vec<(Vec<String>, AnswerInJSON)> = serde_json::from_str(test_cases).unwrap();
 
         for (pieces, expected_answer) in data {
-            let pieces: Vec<ObtainablePieces2> = pieces
+            let pieces: Vec<NonTam2Piece> = pieces
                 .iter()
                 .map(|p| p[..].try_into().unwrap())
-                .collect::<Vec<ObtainablePieces2>>();
+                .collect::<Vec<NonTam2Piece>>();
 
             let answer = calculate_hands_and_score_from_pieces(&pieces);
 
@@ -26,103 +27,7 @@ use serde::{Deserialize, Serialize};
 
 type ObtainableProf = cetkaik_core::Profession;
 
-#[derive(Eq, PartialEq, Debug, Clone, Copy, Hash)]
-pub struct ObtainablePieces2 {
-    color: cetkaik_core::Color,
-    prof: ObtainableProf,
-}
-
 use cetkaik_core::{Color, Profession};
-use std::convert::TryInto;
-
-impl TryInto<ObtainablePieces2> for &str {
-    type Error = ();
-    fn try_into(self) -> Result<ObtainablePieces2, Self::Error> {
-        Ok(match self {
-            "黒兵" => ObtainablePieces2 {
-                color: Color::Huok2,
-                prof: Profession::Kauk2,
-            },
-            "赤兵" => ObtainablePieces2 {
-                color: Color::Kok1,
-                prof: Profession::Kauk2,
-            },
-            "黒弓" => ObtainablePieces2 {
-                color: Color::Huok2,
-                prof: Profession::Gua2,
-            },
-            "黒車" => ObtainablePieces2 {
-                color: Color::Huok2,
-                prof: Profession::Kaun1,
-            },
-            "黒虎" => ObtainablePieces2 {
-                color: Color::Huok2,
-                prof: Profession::Dau2,
-            },
-            "黒馬" => ObtainablePieces2 {
-                color: Color::Huok2,
-                prof: Profession::Maun1,
-            },
-            "黒筆" => ObtainablePieces2 {
-                color: Color::Huok2,
-                prof: Profession::Kua2,
-            },
-            "黒巫" => ObtainablePieces2 {
-                color: Color::Huok2,
-                prof: Profession::Tuk2,
-            },
-            "黒将" => ObtainablePieces2 {
-                color: Color::Huok2,
-                prof: Profession::Uai1,
-            },
-            "赤弓" => ObtainablePieces2 {
-                color: Color::Kok1,
-                prof: Profession::Gua2,
-            },
-            "赤車" => ObtainablePieces2 {
-                color: Color::Kok1,
-                prof: Profession::Kaun1,
-            },
-            "赤虎" => ObtainablePieces2 {
-                color: Color::Kok1,
-                prof: Profession::Dau2,
-            },
-            "赤馬" => ObtainablePieces2 {
-                color: Color::Kok1,
-                prof: Profession::Maun1,
-            },
-            "赤筆" => ObtainablePieces2 {
-                color: Color::Kok1,
-                prof: Profession::Kua2,
-            },
-            "赤巫" => ObtainablePieces2 {
-                color: Color::Kok1,
-                prof: Profession::Tuk2,
-            },
-            "赤将" => ObtainablePieces2 {
-                color: Color::Kok1,
-                prof: Profession::Uai1,
-            },
-            "黒王" => ObtainablePieces2 {
-                color: Color::Huok2,
-                prof: Profession::Io,
-            },
-            "赤王" => ObtainablePieces2 {
-                color: Color::Kok1,
-                prof: Profession::Io,
-            },
-            "黒船" => ObtainablePieces2 {
-                color: Color::Huok2,
-                prof: Profession::Nuak1,
-            },
-            "赤船" => ObtainablePieces2 {
-                color: Color::Kok1,
-                prof: Profession::Nuak1,
-            },
-            _ => return Err(()),
-        })
-    }
-}
 
 impl std::fmt::Display for PositiveHand {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -153,6 +58,8 @@ impl std::fmt::Display for PositiveHand {
         )
     }
 }
+
+use cetkaik_core::absolute::NonTam2Piece;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum PositiveHand {
@@ -224,13 +131,13 @@ impl PositiveHand {
 
 use std::collections::HashSet;
 
-type PieceNumMap = multiset::HashMultiSet<ObtainablePieces2>;
+type PieceNumMap = multiset::HashMultiSet<NonTam2Piece>;
 
 fn has(count: &PieceNumMap, prof: ObtainableProf) -> bool {
-    count.count_of(&ObtainablePieces2 {
+    count.count_of(&NonTam2Piece {
         prof,
         color: Color::Kok1,
-    }) + count.count_of(&ObtainablePieces2 {
+    }) + count.count_of(&NonTam2Piece {
         prof,
         color: Color::Huok2,
     }) > 0
@@ -242,12 +149,12 @@ fn has_all(count: &PieceNumMap, profs: &[ObtainableProf]) -> bool {
 
 fn has_all_same_color(count: &PieceNumMap, profs: &[ObtainableProf]) -> bool {
     profs.iter().all(|a| {
-        count.count_of(&ObtainablePieces2 {
+        count.count_of(&NonTam2Piece {
             prof: *a,
             color: Color::Kok1,
         }) >= 1
     }) || profs.iter().all(|a| {
-        count.count_of(&ObtainablePieces2 {
+        count.count_of(&NonTam2Piece {
             prof: *a,
             color: Color::Huok2,
         }) >= 1
@@ -255,10 +162,10 @@ fn has_all_same_color(count: &PieceNumMap, profs: &[ObtainableProf]) -> bool {
 }
 
 fn howmany(count: &PieceNumMap, prof: ObtainableProf) -> usize {
-    count.count_of(&ObtainablePieces2 {
+    count.count_of(&NonTam2Piece {
         prof,
         color: Color::Kok1,
-    }) + count.count_of(&ObtainablePieces2 {
+    }) + count.count_of(&NonTam2Piece {
         prof,
         color: Color::Huok2,
     })
@@ -266,11 +173,11 @@ fn howmany(count: &PieceNumMap, prof: ObtainableProf) -> usize {
 
 fn calculate_hands_with_no_king(count: &PieceNumMap) -> HashSet<PositiveHand> {
     let mut ans: HashSet<PositiveHand> = HashSet::new();
-    if count.count_of(&ObtainablePieces2 {
+    if count.count_of(&NonTam2Piece {
         prof: Profession::Kauk2,
         color: Color::Kok1,
     }) >= 5
-        || count.count_of(&ObtainablePieces2 {
+        || count.count_of(&NonTam2Piece {
             prof: Profession::Kauk2,
             color: Color::Huok2,
         }) >= 5
@@ -279,19 +186,19 @@ fn calculate_hands_with_no_king(count: &PieceNumMap) -> HashSet<PositiveHand> {
     } else if howmany(&count, Profession::Kauk2) >= 5 {
         ans.insert(PositiveHand::HuetKaikADat2);
     }
-    if (count.count_of(&ObtainablePieces2 {
+    if (count.count_of(&NonTam2Piece {
         prof: Profession::Kaun1,
         color: Color::Kok1,
     }) >= 1
-        && count.count_of(&ObtainablePieces2 {
+        && count.count_of(&NonTam2Piece {
             prof: Profession::Kauk2,
             color: Color::Kok1,
         }) >= 2)
-        || (count.count_of(&ObtainablePieces2 {
+        || (count.count_of(&NonTam2Piece {
             prof: Profession::Kaun1,
             color: Color::Huok2,
         }) >= 1
-            && count.count_of(&ObtainablePieces2 {
+            && count.count_of(&NonTam2Piece {
                 prof: Profession::Kauk2,
                 color: Color::Huok2,
             }) >= 2)
@@ -300,19 +207,19 @@ fn calculate_hands_with_no_king(count: &PieceNumMap) -> HashSet<PositiveHand> {
     } else if has(&count, Profession::Kaun1) && howmany(&count, Profession::Kauk2) >= 2 {
         ans.insert(PositiveHand::Uaip2Hi1);
     }
-    if (count.count_of(&ObtainablePieces2 {
+    if (count.count_of(&NonTam2Piece {
         prof: Profession::Uai1,
         color: Color::Kok1,
     }) >= 1
-        && count.count_of(&ObtainablePieces2 {
+        && count.count_of(&NonTam2Piece {
             prof: Profession::Kauk2,
             color: Color::Kok1,
         }) >= 2)
-        || (count.count_of(&ObtainablePieces2 {
+        || (count.count_of(&NonTam2Piece {
             prof: Profession::Uai1,
             color: Color::Huok2,
         }) >= 1
-            && count.count_of(&ObtainablePieces2 {
+            && count.count_of(&NonTam2Piece {
                 prof: Profession::Kauk2,
                 color: Color::Huok2,
             }) >= 2)
@@ -472,29 +379,29 @@ fn h(ans: &mut HashSet<PositiveHand>, c: &PieceNumMap, color: Color) {
         Profession::Nuak1,
     ];
 
-    if count.count_of(&ObtainablePieces2 {
+    if count.count_of(&NonTam2Piece {
         prof: Profession::Io,
         color,
     }) == 1
     {
-        count.remove(&ObtainablePieces2 {
+        count.remove(&NonTam2Piece {
             prof: Profession::Io,
             color,
         });
         for prof_except_king in prof_list_excluding_king {
-            count.insert(ObtainablePieces2 {
+            count.insert(NonTam2Piece {
                 prof: prof_except_king,
                 color,
             }); // wildcard
             for p in calculate_hands_(&count) {
                 ans.insert(p);
             }
-            count.remove(&ObtainablePieces2 {
+            count.remove(&NonTam2Piece {
                 prof: prof_except_king,
                 color,
             });
         }
-        count.insert(ObtainablePieces2 {
+        count.insert(NonTam2Piece {
             prof: Profession::Io,
             color,
         });
@@ -502,11 +409,11 @@ fn h(ans: &mut HashSet<PositiveHand>, c: &PieceNumMap, color: Color) {
 }
 
 fn calculate_hands_(count: &PieceNumMap) -> HashSet<PositiveHand> {
-    if count.count_of(&ObtainablePieces2 {
+    if count.count_of(&NonTam2Piece {
         prof: Profession::Io,
         color: Color::Huok2,
     }) == 0
-        && count.count_of(&ObtainablePieces2 {
+        && count.count_of(&NonTam2Piece {
             prof: Profession::Io,
             color: Color::Kok1,
         }) == 0
@@ -532,10 +439,10 @@ fn upper_limit(prof: Profession) -> usize {
     }
 }
 
-fn calculate_hands_from_pieces(pieces: &[ObtainablePieces2]) -> Result<Vec<PositiveHand>, TooMany> {
+fn calculate_hands_from_pieces(pieces: &[NonTam2Piece]) -> Result<Vec<PositiveHand>, TooMany> {
     let mut count: PieceNumMap = multiset::HashMultiSet::new();
     for p in pieces {
-        count.insert(ObtainablePieces2 {
+        count.insert(NonTam2Piece {
             prof: p.prof,
             color: p.color,
         });
@@ -557,7 +464,7 @@ fn calculate_hands_from_pieces(pieces: &[ObtainablePieces2]) -> Result<Vec<Posit
             Profession::Io,
             Profession::Nuak1,
         ] {
-            let p = ObtainablePieces2 {
+            let p = NonTam2Piece {
                 prof: *prof,
                 color: *color,
             };
@@ -573,95 +480,7 @@ fn calculate_hands_from_pieces(pieces: &[ObtainablePieces2]) -> Result<Vec<Posit
     return Ok(calculate_hands_(&count).iter().copied().collect());
 }
 
-impl std::fmt::Display for ObtainablePieces2 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let a = match *self {
-            ObtainablePieces2 {
-                prof: Profession::Kauk2,
-                color: Color::Huok2,
-            } => "黒兵",
-            ObtainablePieces2 {
-                prof: Profession::Kauk2,
-                color: Color::Kok1,
-            } => "赤兵",
-            ObtainablePieces2 {
-                prof: Profession::Gua2,
-                color: Color::Huok2,
-            } => "黒弓",
-            ObtainablePieces2 {
-                prof: Profession::Gua2,
-                color: Color::Kok1,
-            } => "赤弓",
-            ObtainablePieces2 {
-                prof: Profession::Kaun1,
-                color: Color::Huok2,
-            } => "黒車",
-            ObtainablePieces2 {
-                prof: Profession::Kaun1,
-                color: Color::Kok1,
-            } => "赤車",
-            ObtainablePieces2 {
-                prof: Profession::Dau2,
-                color: Color::Huok2,
-            } => "黒虎",
-            ObtainablePieces2 {
-                prof: Profession::Dau2,
-                color: Color::Kok1,
-            } => "赤虎",
-            ObtainablePieces2 {
-                prof: Profession::Maun1,
-                color: Color::Huok2,
-            } => "黒馬",
-            ObtainablePieces2 {
-                prof: Profession::Maun1,
-                color: Color::Kok1,
-            } => "赤馬",
-            ObtainablePieces2 {
-                prof: Profession::Kua2,
-                color: Color::Huok2,
-            } => "黒筆",
-            ObtainablePieces2 {
-                prof: Profession::Kua2,
-                color: Color::Kok1,
-            } => "赤筆",
-            ObtainablePieces2 {
-                prof: Profession::Tuk2,
-                color: Color::Huok2,
-            } => "黒巫",
-            ObtainablePieces2 {
-                prof: Profession::Tuk2,
-                color: Color::Kok1,
-            } => "赤巫",
-            ObtainablePieces2 {
-                prof: Profession::Uai1,
-                color: Color::Huok2,
-            } => "黒将",
-            ObtainablePieces2 {
-                prof: Profession::Uai1,
-                color: Color::Kok1,
-            } => "赤将",
-            ObtainablePieces2 {
-                prof: Profession::Io,
-                color: Color::Huok2,
-            } => "黒王",
-            ObtainablePieces2 {
-                prof: Profession::Io,
-                color: Color::Kok1,
-            } => "赤王",
-            ObtainablePieces2 {
-                prof: Profession::Nuak1,
-                color: Color::Huok2,
-            } => "黒船",
-            ObtainablePieces2 {
-                prof: Profession::Nuak1,
-                color: Color::Kok1,
-            } => "赤船",
-        };
-        write!(f, "{}", a)
-    }
-}
-
-pub fn calculate_hands_and_score_from_pieces(ps: &[ObtainablePieces2]) -> Answer {
+pub fn calculate_hands_and_score_from_pieces(ps: &[NonTam2Piece]) -> Answer {
     match calculate_hands_from_pieces(ps) {
         Err(TooMany(too_many_list)) => Err(TooMany(too_many_list)),
         Ok(hands) => Ok(ScoreAndHands {
