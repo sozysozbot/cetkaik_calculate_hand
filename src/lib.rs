@@ -1,3 +1,4 @@
+#[warn(clippy::pedantic)]
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -10,9 +11,9 @@ mod tests {
 
         for (pieces, expected_answer) in data {
             let pieces: Vec<ObtainablePieces2> = pieces
-            .iter()
-            .map(|p| p[..].try_into().unwrap())
-            .collect::<Vec<ObtainablePieces2>>();
+                .iter()
+                .map(|p| p[..].try_into().unwrap())
+                .collect::<Vec<ObtainablePieces2>>();
 
             let answer = calculate_hands_and_score_from_pieces(&pieces);
 
@@ -226,21 +227,21 @@ use std::collections::HashSet;
 type PieceNumMap = multiset::HashMultiSet<ObtainablePieces2>;
 
 fn has(count: &PieceNumMap, prof: ObtainableProf) -> bool {
-    return count.count_of(&ObtainablePieces2 {
-        prof: prof,
+    count.count_of(&ObtainablePieces2 {
+        prof,
         color: Color::Kok1,
     }) + count.count_of(&ObtainablePieces2 {
-        prof: prof,
+        prof,
         color: Color::Huok2,
-    }) > 0;
+    }) > 0
 }
 
 fn has_all(count: &PieceNumMap, profs: &[ObtainableProf]) -> bool {
-    return profs.iter().all(|prof| has(&count, *prof));
+    profs.iter().all(|prof| has(&count, *prof))
 }
 
 fn has_all_same_color(count: &PieceNumMap, profs: &[ObtainableProf]) -> bool {
-    return profs.iter().all(|a| {
+    profs.iter().all(|a| {
         count.count_of(&ObtainablePieces2 {
             prof: *a,
             color: Color::Kok1,
@@ -250,17 +251,17 @@ fn has_all_same_color(count: &PieceNumMap, profs: &[ObtainableProf]) -> bool {
             prof: *a,
             color: Color::Huok2,
         }) >= 1
-    });
+    })
 }
 
 fn howmany(count: &PieceNumMap, prof: ObtainableProf) -> usize {
-    return count.count_of(&ObtainablePieces2 {
-        prof: prof,
+    count.count_of(&ObtainablePieces2 {
+        prof,
         color: Color::Kok1,
     }) + count.count_of(&ObtainablePieces2 {
-        prof: prof,
+        prof,
         color: Color::Huok2,
-    });
+    })
 }
 
 fn calculate_hands_with_no_king(count: &PieceNumMap) -> HashSet<PositiveHand> {
@@ -363,7 +364,7 @@ fn calculate_hands_with_no_king(count: &PieceNumMap) -> HashSet<PositiveHand> {
         PositiveHand::Kua2Kauk2Mun1Aum2,
     );
 
-    return ans;
+    ans
 }
 
 fn f(
@@ -448,7 +449,7 @@ fn calculate_hands_with_king(count: &PieceNumMap) -> HashSet<PositiveHand> {
         PositiveHand::Mun1Mak1Mok1Hue,
     );
 
-    return ans;
+    ans
 }
 
 fn g(ans: &mut HashSet<PositiveHand>, flashhand: PositiveHand, hand: PositiveHand) {
@@ -473,12 +474,12 @@ fn h(ans: &mut HashSet<PositiveHand>, c: &PieceNumMap, color: Color) {
 
     if count.count_of(&ObtainablePieces2 {
         prof: Profession::Io,
-        color: color,
+        color,
     }) == 1
     {
         count.remove(&ObtainablePieces2 {
             prof: Profession::Io,
-            color: color,
+            color,
         });
         for prof_except_king in prof_list_excluding_king {
             count.insert(ObtainablePieces2 {
@@ -495,7 +496,7 @@ fn h(ans: &mut HashSet<PositiveHand>, c: &PieceNumMap, color: Color) {
         }
         count.insert(ObtainablePieces2 {
             prof: Profession::Io,
-            color: color,
+            color,
         });
     }
 }
@@ -510,9 +511,9 @@ fn calculate_hands_(count: &PieceNumMap) -> HashSet<PositiveHand> {
             color: Color::Kok1,
         }) == 0
     {
-        return calculate_hands_with_no_king(&count);
+        calculate_hands_with_no_king(&count)
     } else {
-        return calculate_hands_with_king(&count);
+        calculate_hands_with_king(&count)
     }
 }
 
@@ -569,7 +570,7 @@ fn calculate_hands_from_pieces(pieces: &[ObtainablePieces2]) -> Result<Vec<Posit
     if !too_many_list.is_empty() {
         return Err(TooMany(too_many_list));
     }
-    return Ok(calculate_hands_(&count).iter().map(|p| *p).collect());
+    return Ok(calculate_hands_(&count).iter().copied().collect());
 }
 
 impl std::fmt::Display for ObtainablePieces2 {
@@ -688,8 +689,8 @@ pub enum AnswerInJSON {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ScoreAndHands {
-   pub score: i32,
-   pub hands: HashSet<String>,
+    pub score: i32,
+    pub hands: HashSet<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -712,7 +713,10 @@ impl Into<Answer> for AnswerInJSON {
                 if error {
                     panic!("Invalid AnswerInJSON: has field `score` and `hands` but the value of `error` is true");
                 }
-                Ok(ScoreAndHands { score, hands: hands.into_iter().collect() })
+                Ok(ScoreAndHands {
+                    score,
+                    hands: hands.into_iter().collect(),
+                })
             }
         }
     }
