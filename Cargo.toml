@@ -1,6 +1,6 @@
 [package]
 name = "cetkaik_calculate_hand"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["jekto_vatimeliju <jekto.vatimeliju@gmail.com>"]
 edition = "2018"
 description = "Ported https://www.npmjs.com/package/cerke_hands_and_score into Rust. See https://sites.google.com/view/cet2kaik/the-standardized-rule-in-english for more context."
