@@ -1,4 +1,5 @@
-#[warn(clippy::pedantic)]
+#![warn(clippy::pedantic, clippy::nursery)]
+#![allow(clippy::non_ascii_literal)]
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -35,25 +36,25 @@ impl std::fmt::Display for PositiveHand {
             f,
             "{}",
             match *self {
-                PositiveHand::Io => "王",
-                PositiveHand::Saup1 => "獣",
-                PositiveHand::BapPokSaup1 => "同色獣",
-                PositiveHand::Huep2Hia1 => "地心",
-                PositiveHand::BapPokHuep2Hia1 => "同色地心",
-                PositiveHand::Maun1Gua2Kauk2 => "馬弓兵",
-                PositiveHand::BapPokMaun1Gua2Kauk2 => "同色馬弓兵",
-                PositiveHand::Uaip2Hi1 => "助友",
-                PositiveHand::BapPokUaip2Hi1 => "同色助友",
-                PositiveHand::KaikDat2 => "戦集",
-                PositiveHand::BapPokKaikDat2 => "同色戦集",
-                PositiveHand::Mok1Mok1 => "行行",
-                PositiveHand::BapPokMok1Mok1 => "同色行行",
-                PositiveHand::Kua2Kauk2Mun1Aum2 => "筆兵無傾",
-                PositiveHand::BapPokKua2Kauk2Mun1Aum2 => "同色筆兵無傾",
-                PositiveHand::HuetKaikADat2 => "闇戦之集",
-                PositiveHand::BapPokHuetKaikADat2 => "同色闇戦之集",
-                PositiveHand::Mun1Mak1Mok1Hue => "無抗行処",
-                PositiveHand::BapPokMun1Mak1Mok1Hue => "同色無抗行処",
+                Self::Io => "王",
+                Self::Saup1 => "獣",
+                Self::BapPokSaup1 => "同色獣",
+                Self::Huep2Hia1 => "地心",
+                Self::BapPokHuep2Hia1 => "同色地心",
+                Self::Maun1Gua2Kauk2 => "馬弓兵",
+                Self::BapPokMaun1Gua2Kauk2 => "同色馬弓兵",
+                Self::Uaip2Hi1 => "助友",
+                Self::BapPokUaip2Hi1 => "同色助友",
+                Self::KaikDat2 => "戦集",
+                Self::BapPokKaikDat2 => "同色戦集",
+                Self::Mok1Mok1 => "行行",
+                Self::BapPokMok1Mok1 => "同色行行",
+                Self::Kua2Kauk2Mun1Aum2 => "筆兵無傾",
+                Self::BapPokKua2Kauk2Mun1Aum2 => "同色筆兵無傾",
+                Self::HuetKaikADat2 => "闇戦之集",
+                Self::BapPokHuetKaikADat2 => "同色闇戦之集",
+                Self::Mun1Mak1Mok1Hue => "無抗行処",
+                Self::BapPokMun1Mak1Mok1Hue => "同色無抗行処",
             }
         )
     }
@@ -104,27 +105,29 @@ pub enum PositiveHand {
 }
 
 impl PositiveHand {
-    pub fn hand_to_score(self) -> i32 {
+    #[allow(clippy::match_same_arms)]
+    #[must_use]
+    pub const fn hand_to_score(self) -> i32 {
         match self {
-            PositiveHand::Mun1Mak1Mok1Hue => 50,         // "無抗行処"
-            PositiveHand::BapPokMun1Mak1Mok1Hue => 52,   // "同色無抗行処"
-            PositiveHand::Kua2Kauk2Mun1Aum2 => 10,       // "筆兵無傾"
-            PositiveHand::BapPokKua2Kauk2Mun1Aum2 => 12, // "同色筆兵無傾"
-            PositiveHand::Huep2Hia1 => 7,                // "地心"
-            PositiveHand::BapPokHuep2Hia1 => 9,          // "同色地心"
-            PositiveHand::Maun1Gua2Kauk2 => 5,           // "馬弓兵"
-            PositiveHand::BapPokMaun1Gua2Kauk2 => 7,     // "同色馬弓兵"
-            PositiveHand::Mok1Mok1 => 5,                 // "行行"
-            PositiveHand::BapPokMok1Mok1 => 7,           // "同色行行"
-            PositiveHand::Io => 3 + 2,                   // "王" /* 同色 by default */
-            PositiveHand::Saup1 => 3,                    // "獣"
-            PositiveHand::BapPokSaup1 => 5,              // "同色獣"
-            PositiveHand::KaikDat2 => 3,                 // "戦集"
-            PositiveHand::BapPokKaikDat2 => 5,           // "同色戦集"
-            PositiveHand::Uaip2Hi1 => 3,                 // "助友"
-            PositiveHand::BapPokUaip2Hi1 => 5,           // "同色助友"
-            PositiveHand::HuetKaikADat2 => 3,            // "闇戦之集"
-            PositiveHand::BapPokHuetKaikADat2 => 5,      // "同色闇戦之集"
+            Self::Mun1Mak1Mok1Hue => 50,         // "無抗行処"
+            Self::BapPokMun1Mak1Mok1Hue => 52,   // "同色無抗行処"
+            Self::Kua2Kauk2Mun1Aum2 => 10,       // "筆兵無傾"
+            Self::BapPokKua2Kauk2Mun1Aum2 => 12, // "同色筆兵無傾"
+            Self::Huep2Hia1 => 7,                // "地心"
+            Self::BapPokHuep2Hia1 => 9,          // "同色地心"
+            Self::Maun1Gua2Kauk2 => 5,           // "馬弓兵"
+            Self::BapPokMaun1Gua2Kauk2 => 7,     // "同色馬弓兵"
+            Self::Mok1Mok1 => 5,                 // "行行"
+            Self::BapPokMok1Mok1 => 7,           // "同色行行"
+            Self::Io => 3 + 2,                   // "王" /* 同色 by default */
+            Self::Saup1 => 3,                    // "獣"
+            Self::BapPokSaup1 => 5,              // "同色獣"
+            Self::KaikDat2 => 3,                 // "戦集"
+            Self::BapPokKaikDat2 => 5,           // "同色戦集"
+            Self::Uaip2Hi1 => 3,                 // "助友"
+            Self::BapPokUaip2Hi1 => 5,           // "同色助友"
+            Self::HuetKaikADat2 => 3,            // "闇戦之集"
+            Self::BapPokHuetKaikADat2 => 5,      // "同色闇戦之集"
         }
     }
 }
@@ -144,7 +147,7 @@ fn has(count: &PieceNumMap, prof: ObtainableProf) -> bool {
 }
 
 fn has_all(count: &PieceNumMap, profs: &[ObtainableProf]) -> bool {
-    profs.iter().all(|prof| has(&count, *prof))
+    profs.iter().all(|prof| has(count, *prof))
 }
 
 fn has_all_same_color(count: &PieceNumMap, profs: &[ObtainableProf]) -> bool {
@@ -183,7 +186,7 @@ fn calculate_hands_with_no_king(count: &PieceNumMap) -> HashSet<PositiveHand> {
         }) >= 5
     {
         ans.insert(PositiveHand::BapPokHuetKaikADat2);
-    } else if howmany(&count, Profession::Kauk2) >= 5 {
+    } else if howmany(count, Profession::Kauk2) >= 5 {
         ans.insert(PositiveHand::HuetKaikADat2);
     }
     if (count.count_of(&NonTam2Piece {
@@ -204,7 +207,7 @@ fn calculate_hands_with_no_king(count: &PieceNumMap) -> HashSet<PositiveHand> {
             }) >= 2)
     {
         ans.insert(PositiveHand::BapPokUaip2Hi1);
-    } else if has(&count, Profession::Kaun1) && howmany(&count, Profession::Kauk2) >= 2 {
+    } else if has(count, Profession::Kaun1) && howmany(count, Profession::Kauk2) >= 2 {
         ans.insert(PositiveHand::Uaip2Hi1);
     }
     if (count.count_of(&NonTam2Piece {
@@ -225,41 +228,41 @@ fn calculate_hands_with_no_king(count: &PieceNumMap) -> HashSet<PositiveHand> {
             }) >= 2)
     {
         ans.insert(PositiveHand::BapPokKaikDat2);
-    } else if has(&count, Profession::Uai1) && howmany(&count, Profession::Kauk2) >= 2 {
+    } else if has(count, Profession::Uai1) && howmany(count, Profession::Kauk2) >= 2 {
         ans.insert(PositiveHand::KaikDat2);
     }
 
     f(
         &mut ans,
-        &count,
+        count,
         &[Profession::Dau2, Profession::Maun1],
         PositiveHand::BapPokSaup1,
         PositiveHand::Saup1,
     );
     f(
         &mut ans,
-        &count,
+        count,
         &[Profession::Nuak1, Profession::Kaun1, Profession::Maun1],
         PositiveHand::BapPokMok1Mok1,
         PositiveHand::Mok1Mok1,
     );
     f(
         &mut ans,
-        &count,
+        count,
         &[Profession::Kauk2, Profession::Gua2, Profession::Maun1],
         PositiveHand::BapPokMaun1Gua2Kauk2,
         PositiveHand::Maun1Gua2Kauk2,
     );
     f(
         &mut ans,
-        &count,
+        count,
         &[Profession::Kua2, Profession::Tuk2, Profession::Uai1],
         PositiveHand::BapPokHuep2Hia1,
         PositiveHand::Huep2Hia1,
     );
     f(
         &mut ans,
-        &count,
+        count,
         &[
             Profession::Kauk2,
             Profession::Gua2,
@@ -281,9 +284,9 @@ fn f(
     bappok: PositiveHand,
     hand: PositiveHand,
 ) {
-    if has_all_same_color(&count, arr) {
+    if has_all_same_color(count, arr) {
         ans.insert(bappok);
-    } else if has_all(&count, arr) {
+    } else if has_all(count, arr) {
         ans.insert(hand);
     }
 }
@@ -311,8 +314,8 @@ fn calculate_hands_with_king(count: &PieceNumMap) -> HashSet<PositiveHand> {
         ans.insert(PositiveHand::Mun1Mak1Mok1Hue);
     }
 
-    h(&mut ans, &count, Color::Kok1);
-    h(&mut ans, &count, Color::Huok2);
+    h(&mut ans, count, Color::Kok1);
+    h(&mut ans, count, Color::Huok2);
 
     g(
         &mut ans,
@@ -418,24 +421,24 @@ fn calculate_hands_(count: &PieceNumMap) -> HashSet<PositiveHand> {
             color: Color::Kok1,
         }) == 0
     {
-        calculate_hands_with_no_king(&count)
+        calculate_hands_with_no_king(count)
     } else {
-        calculate_hands_with_king(&count)
+        calculate_hands_with_king(count)
     }
 }
 
-fn upper_limit(prof: Profession) -> usize {
+const fn upper_limit(prof: Profession) -> usize {
     match prof {
         Profession::Kauk2 => 8,
-        Profession::Gua2 => 2,
-        Profession::Kaun1 => 2,
-        Profession::Dau2 => 2,
-        Profession::Maun1 => 2,
-        Profession::Kua2 => 2,
-        Profession::Tuk2 => 2,
-        Profession::Uai1 => 2,
-        Profession::Io => 1,
-        Profession::Nuak1 => 1,
+        Profession::Io | Profession::Nuak1 => 1,
+
+        Profession::Gua2
+        | Profession::Kaun1
+        | Profession::Dau2
+        | Profession::Maun1
+        | Profession::Kua2
+        | Profession::Tuk2
+        | Profession::Uai1 => 2,
     }
 }
 
@@ -480,12 +483,14 @@ fn calculate_hands_from_pieces(pieces: &[NonTam2Piece]) -> Result<Vec<PositiveHa
     return Ok(calculate_hands_(&count).iter().copied().collect());
 }
 
+/// # Errors
+/// Fails when the input is impossible (e.g. there are three or more Io)
 pub fn calculate_hands_and_score_from_pieces(ps: &[NonTam2Piece]) -> Answer {
     match calculate_hands_from_pieces(ps) {
         Err(TooMany(too_many_list)) => Err(TooMany(too_many_list)),
         Ok(hands) => Ok(ScoreAndHands {
             score: hands.iter().map(|h| h.hand_to_score()).sum(),
-            hands: hands.iter().map(|h| h.to_string()).collect(),
+            hands: hands.iter().map(std::string::ToString::to_string).collect(),
         }),
     }
 }
@@ -518,13 +523,13 @@ pub struct TooMany(Vec<String>);
 impl Into<Answer> for AnswerInJSON {
     fn into(self) -> Result<ScoreAndHands, TooMany> {
         match self {
-            AnswerInJSON::ErrorTrue { error, too_many } => {
+            Self::ErrorTrue { error, too_many } => {
                 if !error {
                     panic!("Invalid AnswerInJSON: has field `too_many` but the value of `error` is false");
                 }
                 Err(TooMany(too_many))
             }
-            AnswerInJSON::ErrorFalse {
+            Self::ErrorFalse {
                 error,
                 score,
                 hands,
