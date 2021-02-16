@@ -1,6 +1,6 @@
 [package]
 name = "cetkaik_calculate_hand"
-version = "0.1.7"
+version = "0.1.8"
 authors = ["jekto_vatimeliju <jekto.vatimeliju@gmail.com>"]
 edition = "2018"
 description = "Ported https://www.npmjs.com/package/cerke_hands_and_score into Rust. See https://sites.google.com/view/cet2kaik/the-standardized-rule-in-english for more context."
@@ -12,7 +12,7 @@ exclude = [
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0.61"
-cetkaik_core = "0.3.3"
+serde = { version = "1.0.123", features = ["derive"] }
+serde_json = "1.0.62"
+cetkaik_core = "0.3.4"
 multiset = "0.0.5"
