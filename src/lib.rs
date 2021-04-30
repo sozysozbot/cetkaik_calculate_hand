@@ -3,13 +3,12 @@
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serde_json;
     #[test]
     fn it_works() {
         use std::convert::TryInto;
         let test_cases = include_str!("test_cases.json");
 
-        let data: Vec<(Vec<String>, AnswerInJSON)> = serde_json::from_str(test_cases).unwrap();
+        let data: Vec<(Vec<String>, AnswerInJson)> = serde_json::from_str(test_cases).unwrap();
 
         for (pieces, expected_answer) in data {
             let pieces: Vec<NonTam2Piece> = pieces
@@ -19,7 +18,7 @@ mod tests {
 
             let answer = calculate_hands_and_score_from_pieces(&pieces);
 
-            assert_eq!(answer, expected_answer.into())
+            assert_eq!(answer, expected_answer.try_into())
         }
     }
 }
@@ -499,7 +498,7 @@ type Answer = Result<ScoreAndHands, TooMany>;
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 #[serde(untagged)]
-pub enum AnswerInJSON {
+pub enum AnswerInJson {
     ErrorTrue {
         error: bool, /* true */
         too_many: Vec<String>,
@@ -519,25 +518,26 @@ pub struct ScoreAndHands {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TooMany(Vec<String>);
-
-impl Into<Answer> for AnswerInJSON {
-    fn into(self) -> Result<ScoreAndHands, TooMany> {
-        match self {
-            Self::ErrorTrue { error, too_many } => {
+use std::convert::TryFrom;
+impl TryFrom<AnswerInJson> for ScoreAndHands {
+    type Error = TooMany;
+    fn try_from(s: AnswerInJson) -> Answer {
+        match s {
+            AnswerInJson::ErrorTrue { error, too_many } => {
                 if !error {
-                    panic!("Invalid AnswerInJSON: has field `too_many` but the value of `error` is false");
+                    panic!("Invalid AnswerInJson: has field `too_many` but the value of `error` is false");
                 }
                 Err(TooMany(too_many))
             }
-            Self::ErrorFalse {
+            AnswerInJson::ErrorFalse {
                 error,
                 score,
                 hands,
             } => {
                 if error {
-                    panic!("Invalid AnswerInJSON: has field `score` and `hands` but the value of `error` is true");
+                    panic!("Invalid AnswerInJson: has field `score` and `hands` but the value of `error` is true");
                 }
-                Ok(ScoreAndHands {
+                Ok(Self {
                     score,
                     hands: hands.into_iter().collect(),
                 })
