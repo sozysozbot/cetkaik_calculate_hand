@@ -1,5 +1,11 @@
 #![warn(clippy::pedantic, clippy::nursery)]
 #![allow(clippy::non_ascii_literal)]
+#![cfg_attr(not(test), no_std)]
+
+#[macro_use]
+extern crate alloc;
+use alloc::vec::Vec;
+use alloc::string::{String, ToString};
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -29,8 +35,8 @@ type ObtainableProf = cetkaik_core::Profession;
 
 use cetkaik_core::{Color, Profession};
 
-impl std::fmt::Display for PositiveHand {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl alloc::fmt::Display for PositiveHand {
+    fn fmt(&self, f: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
         write!(
             f,
             "{}",
@@ -131,7 +137,7 @@ impl PositiveHand {
     }
 }
 
-use std::collections::HashSet;
+use hashbrown::HashSet;
 
 type PieceNumMap = multiset::HashMultiSet<NonTam2Piece>;
 
@@ -489,7 +495,7 @@ pub fn calculate_hands_and_score_from_pieces(ps: &[NonTam2Piece]) -> Answer {
         Err(TooMany(too_many_list)) => Err(TooMany(too_many_list)),
         Ok(hands) => Ok(ScoreAndHands {
             score: hands.iter().map(|h| h.hand_to_score()).sum(),
-            hands: hands.iter().map(std::string::ToString::to_string).collect(),
+            hands: hands.iter().map(alloc::string::ToString::to_string).collect(),
         }),
     }
 }
@@ -518,7 +524,7 @@ pub struct ScoreAndHands {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TooMany(Vec<String>);
-use std::convert::TryFrom;
+use core::convert::TryFrom;
 impl TryFrom<AnswerInJson> for ScoreAndHands {
     type Error = TooMany;
     fn try_from(s: AnswerInJson) -> Answer {
