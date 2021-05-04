@@ -4,8 +4,8 @@
 
 #[macro_use]
 extern crate alloc;
-use alloc::vec::Vec;
 use alloc::string::{String, ToString};
+use alloc::vec::Vec;
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -179,61 +179,27 @@ fn howmany(count: &PieceNumMap, prof: ObtainableProf) -> usize {
     })
 }
 
+use cetkaik_core::{color, cp, prof};
+
 fn calculate_hands_with_no_king(count: &PieceNumMap) -> HashSet<PositiveHand> {
     let mut ans: HashSet<PositiveHand> = HashSet::new();
-    if count.count_of(&NonTam2Piece {
-        prof: Profession::Kauk2,
-        color: Color::Kok1,
-    }) >= 5
-        || count.count_of(&NonTam2Piece {
-            prof: Profession::Kauk2,
-            color: Color::Huok2,
-        }) >= 5
-    {
+    if count.count_of(&cp!('赤', '兵')) >= 5 || count.count_of(&cp!('黒', '兵')) >= 5 {
         ans.insert(PositiveHand::BapPokHuetKaikADat2);
-    } else if howmany(count, Profession::Kauk2) >= 5 {
+    } else if howmany(count, prof!('兵')) >= 5 {
         ans.insert(PositiveHand::HuetKaikADat2);
     }
-    if (count.count_of(&NonTam2Piece {
-        prof: Profession::Kaun1,
-        color: Color::Kok1,
-    }) >= 1
-        && count.count_of(&NonTam2Piece {
-            prof: Profession::Kauk2,
-            color: Color::Kok1,
-        }) >= 2)
-        || (count.count_of(&NonTam2Piece {
-            prof: Profession::Kaun1,
-            color: Color::Huok2,
-        }) >= 1
-            && count.count_of(&NonTam2Piece {
-                prof: Profession::Kauk2,
-                color: Color::Huok2,
-            }) >= 2)
+    if (count.count_of(&cp!('赤', '車')) >= 1 && count.count_of(&cp!('赤', '兵')) >= 2)
+        || (count.count_of(&cp!('黒', '車')) >= 1 && count.count_of(&cp!('黒', '兵')) >= 2)
     {
         ans.insert(PositiveHand::BapPokUaip2Hi1);
-    } else if has(count, Profession::Kaun1) && howmany(count, Profession::Kauk2) >= 2 {
+    } else if has(count, prof!('車')) && howmany(count, prof!('兵')) >= 2 {
         ans.insert(PositiveHand::Uaip2Hi1);
     }
-    if (count.count_of(&NonTam2Piece {
-        prof: Profession::Uai1,
-        color: Color::Kok1,
-    }) >= 1
-        && count.count_of(&NonTam2Piece {
-            prof: Profession::Kauk2,
-            color: Color::Kok1,
-        }) >= 2)
-        || (count.count_of(&NonTam2Piece {
-            prof: Profession::Uai1,
-            color: Color::Huok2,
-        }) >= 1
-            && count.count_of(&NonTam2Piece {
-                prof: Profession::Kauk2,
-                color: Color::Huok2,
-            }) >= 2)
+    if (count.count_of(&cp!('赤', '将')) >= 1 && count.count_of(&cp!('赤', '兵')) >= 2)
+        || (count.count_of(&cp!('黒', '将')) >= 1 && count.count_of(&cp!('黒', '兵')) >= 2)
     {
         ans.insert(PositiveHand::BapPokKaikDat2);
-    } else if has(count, Profession::Uai1) && howmany(count, Profession::Kauk2) >= 2 {
+    } else if has(count, prof!('将')) && howmany(count, prof!('兵')) >= 2 {
         ans.insert(PositiveHand::KaikDat2);
     }
 
@@ -495,7 +461,10 @@ pub fn calculate_hands_and_score_from_pieces(ps: &[NonTam2Piece]) -> Answer {
         Err(TooMany(too_many_list)) => Err(TooMany(too_many_list)),
         Ok(hands) => Ok(ScoreAndHands {
             score: hands.iter().map(|h| h.hand_to_score()).sum(),
-            hands: hands.iter().map(alloc::string::ToString::to_string).collect(),
+            hands: hands
+                .iter()
+                .map(alloc::string::ToString::to_string)
+                .collect(),
         }),
     }
 }
